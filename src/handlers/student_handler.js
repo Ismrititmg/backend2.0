@@ -1,9 +1,11 @@
 import prisma from "../db/prisma.js";
+import z from "zod"
 
 import {
   ValidateAllFieldTypes,
   ValidateEmptyField,
 } from "../validators/field_validators.js";
+import { createStudentValidatorSchema, nameValidatorSchema, updateStudentValidatorSchema } from "../validators/validator.js";
 
 const FindAllStudents = async (req, res) => {
 
@@ -131,8 +133,25 @@ const findStudentById = async (req, res) => {
 //Prisma create example
 const createStudent = async (req, res) => {
     console.log("Create student called");
-  try {
-    console.log(req.body)
+ // try {
+    
+    //parsing body data using zod validator schema
+    let result = createStudentValidatorSchema.safeParse(req.body)
+    console.log("result :", result)
+
+    if(!result.success){
+      let errors = result.error.issues.map((ele)=>{
+        return{
+          field: ele.path[0],
+          message: ele.message
+        }
+      })
+      res.status(400).json({
+        message: "something went wrong",
+        error: errors
+      })
+    }
+
     const { name, email, rollNo, departmentId } = req.body;
     if (!req.body || Object.keys(req.body).length === 0) {
       res.status(400).json({
@@ -166,13 +185,13 @@ const createStudent = async (req, res) => {
       message: "student created successfully",
       data: createdStudent,
     });
-  } catch (e) {
-      console.log("ERROR:", e);
-    res.status(500).json({
-      error: "something went wrong",
-      stack: e?.message,
-    });
-  }
+  // } catch (e) {
+  //     console.log("ERROR:", e);
+  //   res.status(500).json({
+  //     error: "something went wrong",
+  //     stack: e?.message,
+  //   });
+ // }
 };
 //prisma create example
 
@@ -208,6 +227,9 @@ const createStudentWithDepartment = async (req, res) => {
 const updateStudent = async(req,res)=>{
     try{
         const {id}=req.params
+
+        updateStudentValidatorSchema.parse(req.body)
+
         const{name,email,rollNo,departmentId}=req.body
     let updatedStudent =  await prisma.students.update({
         where:{
@@ -225,10 +247,22 @@ const updateStudent = async(req,res)=>{
         data: updateStudent
     })
     }catch(e){
-        res.status(500).json({
-            error:"cannot update student",
-            stack: e?.message
+      if(e instanceof z.ZodError){
+        let error= e.issues.map((ele)=>{
+          return{
+            field: ele.path[0],
+            message: ele.message,
+          }
         })
+        res.status(500).json({
+          message: "validation error",
+          error: error
+        })
+      }
+        // res.status(500).json({
+        //     error:"cannot update student",
+        //     stack: e?.message
+        // })
     }
 }
 
