@@ -79,3 +79,15 @@ model Enrollment{
   status String @default("Active")
   @@map("enrollments")
 } 
+
+model user{
+  id Int @id @default(autoincrement())
+  CreatedAt DateTime @default(now()) @map("created_at")
+  UpdatedAt DateTime @updatedAt @map("updated_at")
+  username String @unique
+  email String @unique
+  password String //store hashed password, never store the plain text password
+  role String @default("user")//can be user or admin
+  @@map("users")
+
+}

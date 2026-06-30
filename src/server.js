@@ -8,6 +8,7 @@ import departmentRouter from "./routes/department_route.js"
 import enrollmentRouter from "./routes/enrollment_route.js"
 import { checkApiKeyInHeader, checkXRoleHeaderMiddle } from "./middleware/header_middleware.js"
 import {  addRequestTimeStampMiddleware, customErrorMiddleware, customSuccessMiddleware } from "./middleware/add_request_timestamp_middleware.js"
+import authRouter from "./routes/auth_route.js"
 
 dotenv.config()
 
@@ -72,6 +73,7 @@ app.use("/courses",courseRouter)
 app.use("/teacher",teacherRouter)
 app.use("/department",departmentRouter)
 app.use("/enrollment",enrollmentRouter)
+app.use("/auth", authRouter)
 //res 
 
 app.use(customErrorMiddleware)
