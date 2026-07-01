@@ -114,7 +114,7 @@ export let login = async (req, res) => {
       //including secret from dotenv
       process.env.SECRET_KEY,
        "", //user data: payload
-       "MyEkdamaiSecretKey", //singing secret key
+       //"MyEkdamaiSecretKey", //singing secret key
 
       {
         expiresIn: "2d",

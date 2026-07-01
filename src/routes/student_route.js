@@ -10,10 +10,11 @@ import {
 } from "../handlers/student_handler.js";
 
 import { Router } from "express";
+import { authMiddleware } from "../middleware/auth_middleware.js";
 
 let router = Router();
 
-router.get("/", FindAllStudents);
+router.get("/",authMiddleware, FindAllStudents);
 router.get("/single/:id", findStudentById);
 router.post("/", createStudent);
 router.delete("/:id", deleteStudent);
